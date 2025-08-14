@@ -13,11 +13,14 @@ const memSchema=new mongoose.Schema({
     },
     startDate:{
         type:Date,
-        require:true,
+        default:Date.now,
     },
     endDate:{
         type:Date,
-        require:true,
+        default: function () {
+      
+      return new Date(this.startDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+        }
     },
     timeSlot: {
         type: String, 
@@ -31,7 +34,10 @@ const memSchema=new mongoose.Schema({
         type:String,
         enum:["pending","approved"],
         default:"pending"
-    }
+    },
+    paymentId: { type: String },
+    orderId: { type: String }
+
 
 })
 
