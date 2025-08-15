@@ -29,5 +29,19 @@ class membershipRepo{
 
         }
     }
+
+    async updateGymId(userId,newId){
+        try {
+            const updated=Membership.findOneAndUpdate(
+                {rollNo:userId},
+                {gymId:newId},
+                {new:true}
+            );
+            return updated
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
 }
 module.exports=membershipRepo

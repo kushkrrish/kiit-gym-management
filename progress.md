@@ -6,8 +6,11 @@ Gym Change Request API
 
 POST /memberships/:id/request-change (student)
 
-PATCH /memberships/:id/approve-change (admin)
 
+
+->this will used by admin
+PATCH /memberships/:id/approve-change (admin)
+/ *  have to do this    /*
 QR Code Generation (when membership active)
 
 Store { email, gymId, slotTime } in QR code.
