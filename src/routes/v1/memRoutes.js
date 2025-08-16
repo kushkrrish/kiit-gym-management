@@ -5,5 +5,6 @@ const router=express.Router();
 router.post('/create',memController.createMembership);
 router.get('/',memController.findMembership);
 router.get('/:rollNo',memController.findMembershipByRollNo);
+router.post('/verify-payment',memController.membershipVerification);
 
 module.exports=router

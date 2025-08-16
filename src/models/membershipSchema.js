@@ -36,7 +36,10 @@ const memSchema=new mongoose.Schema({
         default:"pending"
     },
     paymentId: { type: String },
-    orderId: { type: String }
+    orderId: { type: String },
+    amount:{
+        type:Number
+    }
 
 
 })

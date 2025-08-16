@@ -43,5 +43,14 @@ class membershipRepo{
             throw error;
         }
     }
+
+    async findMembershipByOrderId(orderId){
+        try {
+            const mem=Membership.findOne({orderId:orderId});
+            return mem;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 module.exports=membershipRepo

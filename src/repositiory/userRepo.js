@@ -43,6 +43,16 @@ class userRepo{
             throw error;
         }
     }
+    async getUserByRollNo(rollNo){
+        try {
+            const user=await User.findOne({rollNo:rollNo});
+            return user;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+
 }
 
 module.exports=userRepo;

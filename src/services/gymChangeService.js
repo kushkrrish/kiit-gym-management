@@ -48,7 +48,7 @@ async function approveRequest(data) {
             const updatedGymId=await memoRepo.updateGymId(data.userId,updatedRequest.newGymId);
             return updatedGymId;
         }
-        else{
+        if(updatedRequest.status==="Rejected"){
             const msg={msg:"gym change request got rejected"};
             return msg;
         }
