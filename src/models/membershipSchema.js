@@ -32,7 +32,7 @@ const memSchema=new mongoose.Schema({
     },
     status:{
         type:String,
-        enum:["pending","approved"],
+        enum:["pending","approved","expired"],
         default:"pending"
     },
     paymentId: { type: String },
