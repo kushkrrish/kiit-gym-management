@@ -39,6 +39,9 @@ const memSchema=new mongoose.Schema({
     orderId: { type: String },
     amount:{
         type:Number
+    },
+    QRCode:{
+        type:String
     }
 
 

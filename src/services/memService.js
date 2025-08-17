@@ -1,14 +1,7 @@
 const memRepositiory = require('../repositiory/membershipRepo');
 const userRepository = require('../repositiory/userRepo');
 const crypto = require("crypto");
-const {Queue,Worker}=require("bullmq");
-const redis=require("ioredis");
 
-const connection =new redis({
-     host: "127.0.0.1", 
-  port: 6379,
-  maxRetriesPerRequest: null,
-});
 
 const razorpay = require("../config/razorpayConfig");
 const membershipQueue = require('../config/redisConfig');
@@ -70,6 +63,8 @@ async function membershipVerification(data) {
         //consume after 30 days
         await membershipQueue.add("expire-membership", { membershipId: membership._id }, { delay: 30 * 24 * 60 * 60 * 1000 }) // 30 days)
         console.log("membership added to queue")
+        await membershipQueue.add("generateQrDaily",{membershipId:membership._id},{ repeat: { cron: "0 0 * * *" } }
+)
     } catch (error) {
         throw error;
     }
@@ -91,21 +86,7 @@ async function findMembershipByRollNo(rollNo) {
     }
 }
 
-const worker=new Worker("membershipQueue",
-    async job=>{
-        if(job.name==="expire-membership"){
-            const {membershipId}=job.data;
-            const membership=await memoRepo.findMembershipById(membershipId);
-            membership.status="expired"
-            await membership.save();
-            console.log("membership added to queue")
-        }
-    },
-    {connection}
-);
-worker.on("failed",(job,err)=>{
-    console.log(`job failed for job id ${job.id}`,err);
-})
+
 module.exports = {
     createMembership,
     findMembership,
