@@ -43,3 +43,7 @@ Student: Create complaint.
 Admin: View, mark resolved.
 
 3-event api
+
+
+/*daily check/*
+chk qrcode api

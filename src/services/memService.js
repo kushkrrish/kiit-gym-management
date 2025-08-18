@@ -35,6 +35,7 @@ async function createMembership(data) {
         throw error;
     }
 }
+// chkout
 async function membershipVerification(data) {
     try {
         const sign = data.razorpayOrderId + "|" + data.razorpayPaymentId;
@@ -63,8 +64,13 @@ async function membershipVerification(data) {
         //consume after 30 days
         await membershipQueue.add("expire-membership", { membershipId: membership._id }, { delay: 30 * 24 * 60 * 60 * 1000 }) // 30 days)
         console.log("membership added to queue")
-        await membershipQueue.add("generateQrDaily",{membershipId:membership._id},{ repeat: { cron: "0 0 * * *" } }
-)
+        await membershipQueue.add("generateQrDaily", { membershipId: membership._id }, {
+            repeat: {
+                cron: "0 0 * * *",
+                jobId: `generateQrDaily-${membership._id}`,
+            }
+        }
+        )
     } catch (error) {
         throw error;
     }
@@ -93,3 +99,4 @@ module.exports = {
     findMembershipByRollNo,
     membershipVerification
 }
+

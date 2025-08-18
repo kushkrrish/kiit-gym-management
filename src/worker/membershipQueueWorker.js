@@ -3,6 +3,7 @@ const redis = require("ioredis");
 const QRCode = require("qrcode");
 const memRepositiory = require("../repositiory/membershipRepo");
 const userRepository = require("../repositiory/userRepo");
+const membershipQueue = require('../config/redisConfig');
 
 const connection = new redis({
     host: "127.0.0.1",
@@ -24,7 +25,7 @@ const worker = new Worker("membershipQueue", async job => {
             email: user.email,
             rollNo: membership.rollNo,
             gymId: membership.gymId,
-            slot: membership.timeSlot,
+            timeSlot: membership.timeSlot,
             date: today
         };
         const qrString = JSON.stringify(qrPayload);
@@ -37,6 +38,14 @@ const worker = new Worker("membershipQueue", async job => {
         const membership = await memoRepo.findMembershipById(membershipId);
         membership.status = "expired"
         await membership.save();
+
+        await membershipQueue.removeRepeatable("generateQrDaily",  {
+            repeat: {
+                cron: "0 0 * * *",
+                jobId: `generateQrDaily-${membership._id}`,
+            }
+        }
+        )
         console.log("membership added to queue")
     }
 },

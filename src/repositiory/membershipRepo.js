@@ -56,8 +56,10 @@ class membershipRepo{
     async findMembershipById(membershipId){
          try {
             const mem=Membership.findOne({_id:membershipId});
+            // console.log(mem);
             return mem;
         } catch (error) {
+            console.log(error);
             throw error;
         }
     }

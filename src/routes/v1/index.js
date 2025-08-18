@@ -4,12 +4,14 @@ const userRouter = require("./userRouter");
 const gymRouter = require('./gymRoutes');
 const memRouter = require("./memRoutes");
 const gymChangeRouter = require("./gymChangeRoutes");
+const adminRouter=require("./adminRoutes");
 
 
 router.use('/user', userRouter);
 router.use('/gym', gymRouter)
 router.use('/membership', memRouter);
 router.use('/gymChangeRequest', gymChangeRouter);
+router.use('/admin',adminRouter);
 
 
 
