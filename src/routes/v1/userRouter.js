@@ -5,6 +5,9 @@ router.get('/ping',()=>{
     console.log("pong");
     return "pong"
 })
+/* app.get("/complaints", authVerification(["admin"]), (req, res) => {
+   // only admins allowed
+});*/
 router.post('/signup',userController.createUser);
 router.post('/signin',userController.signin);
 

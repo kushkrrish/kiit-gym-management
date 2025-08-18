@@ -28,7 +28,8 @@ async function signin(req,res) {
         const user=await userService.signin({
             // name:req.body.name,
             email:req.body.email,
-            password:req.body.password
+            password:req.body.password,
+            role:req.body.role,
         })
         return res.status(StatusCodes.OK).json({
             success:true,
