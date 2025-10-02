@@ -4,7 +4,8 @@ const adminService=require("../services/adminServices");
 async function createEntry(req,res) {
     try {
         const response=await adminService.createEntry(req.body);
-        return res.status(StatusCodes.CREATED).json({
+        return res.status(StatusCodes.OK).json({
+            message:"entry created",
             success:true,
             data:response
         });

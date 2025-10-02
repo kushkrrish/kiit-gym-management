@@ -5,6 +5,7 @@ const userSchema=new mongoose.Schema({
         type:String,
         enum:["student","admin"],
         default:"student",
+        require:true
         
     },
     name:{
@@ -13,7 +14,14 @@ const userSchema=new mongoose.Schema({
     },
     rollNo:{
         type:String,
-        require:[true,"roll no cant be empty"],
+        // require:[true,"roll no cant be empty"],
+        validate: {
+      validator: function (v) {
+        return this.role !== "student" || (v && v.length > 0);
+      },
+      message: "rollNo is required for students"
+    }
+
        
     },
     email:{
@@ -22,11 +30,25 @@ const userSchema=new mongoose.Schema({
         require:[true,"email cant be empty"],
         
     },
+    employeeId:{
+        type:String,
+        // require:true,
+       validate: {
+      validator: function (v) {
+        return this.role !== "admin" || (v && v.length > 0);
+      },
+      message: "employeeId is required for admins"
+    }
+    },
     password:{
         type:String,
         require:[true,"cant be empty"]
     },
+    
     hasPaidJoiningFee: { type: Boolean, default: false },
+    membershipId:{
+        type:String
+    }
 
 
     

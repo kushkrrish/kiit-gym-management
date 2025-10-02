@@ -1,57 +1,64 @@
-const { Worker } = require("bullmq");
-const redis = require("ioredis");
-const QRCode = require("qrcode");
+require("dotenv").config({ path: require("path").resolve(__dirname, "../../.env") });
+console.log("ATLAS_DB_URL from env:", process.env.ATLAS_DB_URL);
+const { Worker, QueueEvents } = require("bullmq");
+const Redis = require("ioredis");
+const dbConnect = require("../config/dbConfig");
 const memRepositiory = require("../repositiory/membershipRepo");
-const userRepository = require("../repositiory/userRepo");
-const membershipQueue = require('../config/redisConfig');
+const generareQr = require("../utils/generateQr");
+const membershipQueue = require("../config/redisConfig");
 
-const connection = new redis({
+(async () => {
+  console.log("ATLAS_DB_URL from env:", process.env.ATLAS_DB_URL); // debug
+  await dbConnect();
+
+  const connection = new Redis({
     host: "127.0.0.1",
     port: 6379,
     maxRetriesPerRequest: null,
-});
-const memoRepo = new memRepositiory();
-const userRepo = new userRepository();
+  });
 
-const worker = new Worker("membershipQueue", async job => {
-    if (job.name === "generateQrDaily") {
-        const { membershipId } = job.data;
-        const membership = await memoRepo.findMembershipById(membershipId);
-        const user = await userRepo.getUserByRollNo(membership.rollNo);
-        if (!membership || membership.status !== "active") return;
-        const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
-        const qrPayload = {
-            membershipId: membership._id,
-            email: user.email,
-            rollNo: membership.rollNo,
-            gymId: membership.gymId,
-            timeSlot: membership.timeSlot,
-            date: today
-        };
-        const qrString = JSON.stringify(qrPayload);
-        const qrImage = await QRCode.toDataURL(qrString);
-        membership.QRCode = qrImage;
-        await membership.save();
-    }
-    if (job.name === "expire-membership") {
-        const { membershipId } = job.data;
-        const membership = await memoRepo.findMembershipById(membershipId);
-        membership.status = "expired"
-        await membership.save();
+  const memoRepo = new memRepositiory();
 
-        await membershipQueue.removeRepeatable("generateQrDaily",  {
-            repeat: {
-                cron: "0 0 * * *",
-                jobId: `generateQrDaily-${membership._id}`,
-            }
+  const worker = new Worker(
+    "membershipQueue",
+    async (job) => {
+      try {
+        if (job.name === "generateQrDaily") {
+          console.log("Processing job:", job.name, "data:", job.data);
+          await generareQr(job.data.membershipId);
+          return { status: "qr-generated", membershipId: job.data.membershipId };
         }
-        )
-        console.log("membership added to queue")
-    }
-},
 
-    { connection });
+        if (job.name === "expire-membership") {
+          const { membershipId } = job.data;
+          const membership = await memoRepo.findMembershipById(membershipId);
+          membership.status = "expired";
+          await membership.save();
 
-worker.on("failed", (job, err) => {
+            await membershipQueue.removeRepeatable("generateQrDaily", {
+        cron: "0 0 * * *",
+        jobId: `generateQrDaily-${membership._id}`,
+      });
+          console.log("membership expired:", membershipId);
+          return { status: "expired", membershipId };
+        }
+      } catch (error) {
+        console.log("error from worker:", error);
+        throw error;
+      }
+    },
+    { connection }
+  );
+
+  worker.on("failed", (job, err) => {
     console.log(`job failed for job id ${job.id}`, err);
-})
+  });
+
+  const queueEvents = new QueueEvents("membershipQueue", { connection });
+  queueEvents.on("completed", ({ jobId, returnvalue }) => {
+    console.log(`Job ${jobId} completed with result:`, returnvalue);
+  });
+  queueEvents.on("failed", ({ jobId, failedReason }) => {
+    console.log(`Job ${jobId} failed with error:`, failedReason);
+  });
+})();

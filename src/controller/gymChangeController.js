@@ -38,7 +38,8 @@ async function findRequests(req, res) {
 
 async function findRequestById(req, res) {
     try {
-        const response = await gymChangeService.findRequestById(req.params._id);
+        const response = await gymChangeService.findRequestById(req.params.rollNo);
+        console.log(response);
         return res.status(StatusCodes.OK).json({
             success: true,
             data: response

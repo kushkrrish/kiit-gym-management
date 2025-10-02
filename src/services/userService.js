@@ -21,9 +21,14 @@ async function signin(data) {
         if(!userEmail){
             throw ("user not found");
         }
+        console.log(data.role)
+        if(userEmail.role!==data.role){
+            throw new Error("role is incorrect")
+        }
         const compared=async function (userEmail,data) {
             await bcrypt.compare(userEmail.password,data.password);
         }
+        
         if(!compared){
             throw ("invalid password");
         }
@@ -34,8 +39,18 @@ async function signin(data) {
         throw error;
     }
 }
+async function findUserByEmail(data) {
+    try {
+        const user=await userRepo.getUserByEmail(data);
+        return user
+    } catch (error) {
+        console.log(error);
+        throw new Error("user not found");
+    }
+}
 
 module.exports={
     createUser,
-    signin
+    signin,
+    findUserByEmail
 }

@@ -55,13 +55,16 @@ class membershipRepo{
 
     async findMembershipById(membershipId){
          try {
-            const mem=Membership.findOne({_id:membershipId});
-            // console.log(mem);
+            const mem= await Membership.findById(membershipId);
+            console.log(mem);
             return mem;
         } catch (error) {
             console.log(error);
             throw error;
         }
     }
+    async updateMembership(id, update) {
+    return Membership.findByIdAndUpdate(id, update, { new: true });
+  }
 }
 module.exports=membershipRepo

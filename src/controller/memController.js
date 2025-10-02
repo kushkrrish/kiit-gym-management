@@ -57,15 +57,15 @@ async function findMembershipByRollNo(req,res) {
 async function membershipVerification(req,res) {
     try {
         //mimic the payment verification for testing
-        const generated_signature = crypto
-        .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET )
-        .update(req.body.razorpayOrderId + "|" + req.body.razorpayPaymentId)
-        .digest("hex");
-        console.log(generated_signature.toString());
+        // const generated_signature = crypto
+        // .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET )
+        // .update(req.body.razorpayOrderId + "|" + req.body.razorpayPaymentId)
+        // .digest("hex");
+        // console.log(generated_signature.toString());
         const response=await memService.membershipVerification({
-            razorpayOrderId:req.body.razorpayOrderId,
-            razorpayPaymentId:req.body.razorpayPaymentId,
-            razorpaySignature:generated_signature.toString()
+            razorpay_order_id:req.body.razorpay_order_id,
+            razorpay_payment_id:req.body.razorpay_payment_id,
+            razorpay_signature:req.body.razorpay_signature
         })
 
         return res.status(StatusCodes.OK).json({
@@ -81,9 +81,29 @@ async function membershipVerification(req,res) {
         })
     }
 }
+async function findMembershipById(req,res) {
+    try {
+        console.log(req.params.membershipId)
+        const response=await memService.findMembershipById(
+            req.params.membershipId
+        )
+        console.log(response);
+        return res.status(StatusCodes.OK).json({
+            success:true,
+            data:response
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            success:false,
+            error:error
+        })
+    }
+}
 
 module.exports={
     createMembership,
     findMembership,findMembershipByRollNo,
-    membershipVerification
+    membershipVerification,
+    findMembershipById
 }

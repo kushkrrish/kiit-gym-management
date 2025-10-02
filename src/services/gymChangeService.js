@@ -22,9 +22,9 @@ async function findRequests() {
     }
 }
 
-async function findRequestById(_id) {
+async function findRequestById(rollNo) {
     try {
-        const request = await gymRepo.findRequestById(_id);
+        const request = await gymRepo.findRequestById(rollNo);
         return request;
     } catch (error) {
         throw error;

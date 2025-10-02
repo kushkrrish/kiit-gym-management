@@ -13,9 +13,12 @@ async function createGym(data) {
 
 async function findGym() {
     try {
-        const gyms=gymRepo.findGym();
+        const gym=await gymRepo.findGym();
+        const gyms=[...gym]
+        // console.log(gyms)
         return gyms;
     } catch (error) {
+        console.log(error);
         throw error;
     }
 }

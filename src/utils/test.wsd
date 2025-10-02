@@ -1,0 +1,93 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+title Gym Management ER / Class Diagram
+
+' ===== Enums =====
+enum UserRole { student admin }
+enum MembershipStatus { pending approved expired }
+enum ComplaintStatus { pending resolved }
+enum ChangeStatus { Pending Approved Rejected }
+
+' ===== Users (generalization) =====
+abstract class User {
+  +_id : ObjectId
+  +name : String
+  +email : String {unique}
+  +password : String
+  +role : UserRole
+}
+
+class Student {
+  +rollNo : String
+  +hasPaidJoiningFee : Boolean
+  +membershipId : String
+}
+
+class Admin {
+  +employeeId : String
+}
+
+User <|-- Student
+User <|-- Admin
+
+' ===== Core entities =====
+class Gym {
+  +gymId : Number {unique}
+  +name : String
+  +location : String
+  +capacity : Number = 50
+  +timeSlots : [String]
+}
+
+class Membership {
+  +_id : ObjectId
+  +rollNo : String
+  +gymId : Number
+  +startDate : Date = now()
+  +endDate : Date
+  +timeSlot : String
+  +isActive : Boolean = false
+  +status : MembershipStatus
+  +paymentId : String
+  +orderId : String
+  +amount : Number
+  +QRCode : String
+}
+
+class Entry {
+  +_id : ObjectId
+  +membershipId : ObjectId
+  +userEmail : String
+  +rollNo : String
+  +timeSlot : String
+  +gymId : Number
+  +date : String
+  +timeOfScan : Date = now()
+}
+
+class GymChangeRequest {
+  +_id : ObjectId
+  +description : String
+  +userId : ObjectId
+  +oldGymId : Number
+  +newGymId : Number
+  +status : ChangeStatus
+}
+
+class Complaint {
+  +_id : ObjectId
+  +userId : ObjectId
+  +description : String
+  +status : ComplaintStatus
+  +date : Date = now()
+}
+
+' ===== Relationships (with multiplicities) =====
+Student "1" -- "0..*" Membership : enrolls
+Membership "1" -- "0..*" Entry : logs
+Gym "1" -- "0..*" Membership : hosts
+Gym "1" -- "0..*" Entry : records
+User "1" -- "0..*" Complaint : raises
+User "1" -- "0..*" GymChangeRequest : requests
+@enduml

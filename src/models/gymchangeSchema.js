@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const GymChangeRequestSchema = new mongoose.Schema({
     description: {
         type: String,
-        require:true
+        
     },
     userId: {
         type: String,

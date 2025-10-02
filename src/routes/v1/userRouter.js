@@ -10,5 +10,6 @@ router.get('/ping',()=>{
 });*/
 router.post('/signup',userController.createUser);
 router.post('/signin',userController.signin);
+router.get('/:emailId',userController.findUserByEmail);
 
 module.exports=router

@@ -11,7 +11,7 @@ class complaintRepo{
     }
     async findComplaintByRollNo(rollNo){
         try {
-            const comp=await Complaint.findOne({userId:rollNo});
+            const comp=await Complaint.find({userId:rollNo});
             return comp;
         } catch (error) {
             throw error

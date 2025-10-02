@@ -18,9 +18,9 @@ class GymChangeRepo{
             throw error;
         }
     }
-    async findRequestById(_id){
+    async findRequestById(rollNo){
         try {
-            const request=await GymChange.findOne({_id:_id});
+            const request=await GymChange.find({userId:rollNo});
             return request;
         } catch (error) {
             throw error;

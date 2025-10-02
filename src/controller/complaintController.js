@@ -7,7 +7,9 @@ async function createComplaint(req,res) {
         const response=await complaintService.createComplaint({
             userId:req.body.userId,
             description:req.body.description
+
         })
+        console.log(response);
         return res.status(StatusCodes.CREATED).json({
             success:true,
             data:response
